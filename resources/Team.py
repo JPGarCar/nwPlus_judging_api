@@ -13,22 +13,20 @@ class TeamResource(Resource):
         return {'status': 'success', 'data': teams}, 200
 
     def post(self):
-        json_data = request.get_json()
+        json_data = request.get_json(force=True)
         if not json_data:
             return {'message': 'No input data provided'}, 400
 
+        input_team = team_schema.load(json_data)
+
         # validate and deseiralize input
-        data, errors = team_schema.load(json_data)
-        if errors:
-            return errors, 422
-        team = Team.query.filter_by(teamName=data['teamName']).first()
+        team = Team.query.filter_by(teamName=input_team.teamName).first()
         if team:
             return {'message': 'Team already exists'}, 400
-        team = Team(teamName=data['teamName'])
+        else:
+            db.session.add(input_team)
+            db.session.commit()
 
-        db.session.add(team)
-        db.session.commit()
-
-        result = team_schema.dump(team)
+        result = team_schema.dump(input_team)
 
         return {'status': 'success', 'data': result}, 201

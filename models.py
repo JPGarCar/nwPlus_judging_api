@@ -1,10 +1,10 @@
 from flask import Flask
-from marshmallow import Schema, fields, pre_load, validate
-from flask_marshmallow import Marshmallow
+from marshmallow import Schema, fields, pre_load, validate, post_load
 from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
 
-ma = Marshmallow()
 db = SQLAlchemy()
+ma = Marshmallow()
 
 
 # Models
@@ -13,7 +13,7 @@ db = SQLAlchemy()
 class Team(db.Model):
     __tablename__ = 'teams'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    teamName = db.Column(db.String, unique=True)
+    team_name = db.Column(db.String, unique=True)
     hackers = db.relationship('Hacker', backref='team', lazy=True)
     submission = db.relationship('Submission', backref='team', lazy=True, uselist=False)
 
@@ -47,7 +47,7 @@ class Hacker(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, unique=True, nullable=False)
-    judgingComplete = db.Column(db.Boolean)
+    grading_complete = db.Column(db.Boolean)
     grades = db.relationship('Grade', backref='hacker', lazy=True)
     team_id = db.Column(db.Integer, db.ForeignKey('teams.id'), nullable=False)
 
@@ -61,8 +61,8 @@ class Submission(db.Model):
     __tablename__ = 'submissions'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     description = db.Column(db.String)
-    devpostLink = db.Column(db.String)
-    youtubeLink = db.Column(db.String)
+    devpost_link = db.Column(db.String)
+    youtube_link = db.Column(db.String)
     grades = db.relationship('Grade', backref='submission', lazy=True)
     team_id = db.Column(db.Integer, db.ForeignKey('teams.id'), nullable=False)
 
@@ -93,3 +93,7 @@ class TeamSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Team
         include_fk = True
+
+    @post_load
+    def make_user(self, data, **kwargs):
+        return Team(**data)
