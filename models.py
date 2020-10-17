@@ -33,13 +33,19 @@ class Grade(db.Model):
     hacker_id = db.Column(db.Integer, db.ForeignKey('hackers.id'), nullable=False)
     submission_id = db.Column(db.Integer, db.ForeignKey('submissions.id'), nullable=False)
 
-    def __init__(self, comment, technology, design, functionality, creativity, pitch):
+    def __init__(self, comment, technology, design, functionality, creativity, pitch, **kwargs):
+        submission_id = kwargs.get('submission_id', None)
+        hacker_id = kwargs.get('hacker_id', None)
+        obj_id = kwargs.get('id', None)
         self.comment = comment
         self.technology = technology
         self.design = design
         self.functionality = functionality
         self.creativity = creativity
         self.pitch = pitch
+        self.hacker_id = hacker_id
+        self.submission_id = submission_id
+        self.id = obj_id
 
 
 class Hacker(db.Model):

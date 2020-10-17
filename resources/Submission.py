@@ -11,7 +11,7 @@ class SubmissionResource(Resource):
         # grab data from json input
         submission_json_data = request.get_json(force=True)
         if not submission_json_data:
-            return {'message': 'No input data provided'}, 400
+            return {'status': 'error', 'message': 'No input data provided'}, 400
 
         # separate input json into two, one for team, one for submission
         team_json_data = {
