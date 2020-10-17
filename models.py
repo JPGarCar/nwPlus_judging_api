@@ -13,8 +13,8 @@ ma = Marshmallow()
 class Team(db.Model):
     __tablename__ = 'teams'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    team_name = db.Column(db.String, unique=True)
-    hackers = db.relationship('Hacker', backref='team', lazy=True)
+    team_name = db.Column(db.Text, unique=True)
+    team_members = db.relationship('Hacker', backref='team', lazy=True)
     submission = db.relationship('Submission', backref='team', lazy=True, uselist=False)
 
     def __init__(self, team_name):
@@ -24,7 +24,7 @@ class Team(db.Model):
 class Grade(db.Model):
     __tablename__ = 'grades'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    comment = db.Column(db.String)
+    comment = db.Column(db.Text)
     technology = db.Column(db.Integer)
     design = db.Column(db.Integer)
     functionality = db.Column(db.Integer)
@@ -45,9 +45,9 @@ class Grade(db.Model):
 class Hacker(db.Model):
     __tablename__ = 'hackers'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String, nullable=False)
-    email = db.Column(db.String, unique=True, nullable=False)
-    grading_complete = db.Column(db.Boolean)
+    name = db.Column(db.Text, nullable=False)
+    email = db.Column(db.Text, unique=True, nullable=False)
+    grading_complete = db.Column(db.Boolean, default=False, nullable=False)
     grades = db.relationship('Grade', backref='hacker', lazy=True)
     team_id = db.Column(db.Integer, db.ForeignKey('teams.id'), nullable=False)
 
@@ -60,9 +60,9 @@ class Hacker(db.Model):
 class Submission(db.Model):
     __tablename__ = 'submissions'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    description = db.Column(db.String)
-    devpost_link = db.Column(db.String)
-    youtube_link = db.Column(db.String)
+    description = db.Column(db.Text)
+    devpost_link = db.Column(db.Text)
+    youtube_link = db.Column(db.Text)
     grades = db.relationship('Grade', backref='submission', lazy=True)
     team_id = db.Column(db.Integer, db.ForeignKey('teams.id'), nullable=False)
 
@@ -77,6 +77,7 @@ class Submission(db.Model):
 class GradeSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Grade
+        include_fk = True
 
     @post_load
     def make_user(self, data, **kwargs):
@@ -84,8 +85,12 @@ class GradeSchema(ma.SQLAlchemyAutoSchema):
 
 
 class HackerSchema(ma.SQLAlchemyAutoSchema):
+
+    grades = fields.Nested(GradeSchema, many=True)
+
     class Meta:
         model = Hacker
+        include_fk = True
 
     @post_load
     def make_user(self, data, **kwargs):
@@ -93,8 +98,12 @@ class HackerSchema(ma.SQLAlchemyAutoSchema):
 
 
 class SubmissionSchema(ma.SQLAlchemyAutoSchema):
+
+    grades = fields.Nested(GradeSchema, many=True)
+
     class Meta:
         model = Submission
+        include_fk = True
 
     @post_load
     def make_user(self, data, **kwargs):
@@ -102,6 +111,10 @@ class SubmissionSchema(ma.SQLAlchemyAutoSchema):
 
 
 class TeamSchema(ma.SQLAlchemyAutoSchema):
+
+    team_members = fields.Nested(HackerSchema, many=True)
+    submission = fields.Nested(SubmissionSchema)
+
     class Meta:
         model = Team
         include_fk = True
