@@ -17,8 +17,8 @@ class Team(db.Model):
     hackers = db.relationship('Hacker', backref='team', lazy=True)
     submission = db.relationship('Submission', backref='team', lazy=True, uselist=False)
 
-    def __init__(self, teamName):
-        self.teamName = teamName
+    def __init__(self, team_name):
+        self.team_name = team_name
 
 
 class Grade(db.Model):
@@ -54,7 +54,7 @@ class Hacker(db.Model):
     def __init__(self, name, email):
         self.name = name
         self.email = email
-        self.judgingComplete = False
+        self.grading_complete = False
 
 
 class Submission(db.Model):
@@ -66,10 +66,10 @@ class Submission(db.Model):
     grades = db.relationship('Grade', backref='submission', lazy=True)
     team_id = db.Column(db.Integer, db.ForeignKey('teams.id'), nullable=False)
 
-    def __init__(self, description, devpostLink, youtubeLink):
+    def __init__(self, description, devpost_link, youtube_link):
         self.description = description
-        self.devpostLink = devpostLink
-        self.youtubeLink = youtubeLink
+        self.devpost_link = devpost_link
+        self.youtube_link = youtube_link
 
 
 # Schemas
@@ -78,15 +78,27 @@ class GradeSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Grade
 
+    @post_load
+    def make_user(self, data, **kwargs):
+        return Grade(**data)
+
 
 class HackerSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Hacker
 
+    @post_load
+    def make_user(self, data, **kwargs):
+        return Hacker(**data)
+
 
 class SubmissionSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Submission
+
+    @post_load
+    def make_user(self, data, **kwargs):
+        return Submission(**data)
 
 
 class TeamSchema(ma.SQLAlchemyAutoSchema):
