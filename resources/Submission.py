@@ -9,25 +9,17 @@ team_schema = TeamSchema()
 class SubmissionResource(Resource):
     def post(self):
         # grab data from json input
-        json_data = request.get_json(force=True)
-        if not json_data:
+        submission_json_data = request.get_json(force=True)
+        if not submission_json_data:
             return {'message': 'No input data provided'}, 400
 
         # separate input json into two, one for team, one for submission
         team_json_data = {
-            "team_name": json_data['team_name']
+            "team_name": request.args.get('team_name')
         }
-
-        submission_json_data = json_data.copy()
-        del submission_json_data['team_name']
-
-        print(submission_json_data)
 
         input_submission = submission_schema.load(submission_json_data)
         input_team = team_schema.load(team_json_data)
-
-        print(input_submission)
-        print(input_team)
 
         # add submission to the team
         input_team.submission = input_submission
