@@ -26,6 +26,9 @@ class HackerResource(Resource):
         # grab data from json
         json_data = request.get_json(force=True)
 
+        if not json_data:
+            return {'status': 'error', 'message': 'no json data given'}, 400
+
         # check if team id is a real team id
         team = Team.query.get(json_data['team_id'])
 
@@ -40,7 +43,6 @@ class HackerResource(Resource):
 
         # check if there is a hacker with the same email
         hacker = Hacker.query.filter_by(email=input_hacker.email).first()
-
         if hacker:
             return {'status': 'error', 'message': 'a hacker with that email already exists'}, 400
 
