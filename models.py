@@ -33,7 +33,8 @@ class Grade(db.Model):
     hacker_id = db.Column(db.Integer, db.ForeignKey('hackers.id'), nullable=False)
     submission_id = db.Column(db.Integer, db.ForeignKey('submissions.id'), nullable=False)
 
-    def __init__(self, comment, technology, design, functionality, creativity, pitch, **kwargs):
+    def __init__(self, comment=None, technology=None, design=None, functionality=None,
+                 creativity=None, pitch=None, **kwargs):
         submission_id = kwargs.get('submission_id', None)
         hacker_id = kwargs.get('hacker_id', None)
         obj_id = kwargs.get('id', None)
@@ -84,6 +85,7 @@ class GradeSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Grade
         include_fk = True
+        dump_only = ('hacker_id', 'submission_id',)
 
     @post_load
     def make_user(self, data, **kwargs):
@@ -91,12 +93,12 @@ class GradeSchema(ma.SQLAlchemyAutoSchema):
 
 
 class HackerSchema(ma.SQLAlchemyAutoSchema):
-
     grades = fields.Nested(GradeSchema, many=True)
 
     class Meta:
         model = Hacker
         include_fk = True
+        dump_only = ('team_id', )
 
     @post_load
     def make_user(self, data, **kwargs):
@@ -104,12 +106,11 @@ class HackerSchema(ma.SQLAlchemyAutoSchema):
 
 
 class SubmissionSchema(ma.SQLAlchemyAutoSchema):
-
     grades = fields.Nested(GradeSchema, many=True)
-
     class Meta:
         model = Submission
         include_fk = True
+        dump_only = ('team_id',)
 
     @post_load
     def make_user(self, data, **kwargs):
@@ -117,7 +118,6 @@ class SubmissionSchema(ma.SQLAlchemyAutoSchema):
 
 
 class TeamSchema(ma.SQLAlchemyAutoSchema):
-
     team_members = fields.Nested(HackerSchema, many=True)
     submission = fields.Nested(SubmissionSchema)
 
