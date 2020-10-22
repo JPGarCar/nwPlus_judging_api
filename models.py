@@ -107,6 +107,7 @@ class HackerSchema(ma.SQLAlchemyAutoSchema):
 
 class SubmissionSchema(ma.SQLAlchemyAutoSchema):
     grades = fields.Nested(GradeSchema, many=True)
+
     class Meta:
         model = Submission
         include_fk = True
