@@ -13,9 +13,14 @@ class SubmissionResource(Resource):
         if not submission_json_data:
             return {'status': 'error', 'message': 'No input data provided'}, 400
 
+        # grab team name from args
+        team_name = request.args.get('team_name')
+        if not team_name:
+            return {'status': 'error', 'message': 'No argument team_name provided'}, 400
+
         # separate input json into two, one for team, one for submission
         team_json_data = {
-            "team_name": request.args.get('team_name')
+            "team_name": team_name
         }
 
         input_submission = submission_schema.load(submission_json_data)
