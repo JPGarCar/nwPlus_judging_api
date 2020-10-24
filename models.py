@@ -30,8 +30,8 @@ class Grade(db.Model):
     functionality = db.Column(db.Integer)
     creativity = db.Column(db.Integer)
     pitch = db.Column(db.Integer)
-    hacker_id = db.Column(db.Integer, db.ForeignKey('hackers.id'), nullable=False)
-    submission_id = db.Column(db.Integer, db.ForeignKey('submissions.id'), nullable=False)
+    hacker_id = db.Column(db.Integer, db.ForeignKey('hackers.id'))
+    submission_id = db.Column(db.Integer, db.ForeignKey('submissions.id'))
 
     def __init__(self, comment=None, technology=None, design=None, functionality=None,
                  creativity=None, pitch=None, **kwargs):
