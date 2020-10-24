@@ -125,10 +125,7 @@ class JudgeMaster:
         # we want to sort the dict by the int keys, we receive a tuple
         sets = sorted(sets.items())
 
-        numbers = {}
-        for key, value in sets:
-            numbers[key] = len(value)
-        print(numbers)
+        print(self.getDistribution(sets))
 
         # here key is number of grade, value is list of hackers with that number of grades
         for key, value in sets:
@@ -145,11 +142,11 @@ class JudgeMaster:
 
                     ttf = times_to_fix
 
-                    # highest set
-                    highest_set = sets[-1]
+                    # highest set, set of optimal value
+                    highest_set = sets[grades_per_hacker]
 
-                    # second highest set
-                    second_highest_set = sets[-2]
+                    # second highest set, set of one less than optimal value
+                    second_highest_set = sets[grades_per_hacker - 1]
 
                     # loop over the number of times we need to fix this hacker
                     while ttf > 0:
@@ -237,7 +234,12 @@ class JudgeMaster:
                         # remove num_grades_hacker_list we are fixing from its list
                         value.remove(num_grades_hacker_list)
                         sets[num_grades_hacker_list[0]][1].append(num_grades_hacker_list)
+        dis = self.getDistribution(sets)
+        print(dis)
+        return dis
+
+    def getDistribution(self, sets):
         numbers = {}
         for key, value in sets:
             numbers[key] = len(value)
-        print(numbers)
+        return numbers
