@@ -17,7 +17,7 @@ class JudgeMasterResource(Resource):
 
         judge_master = JudgeMaster()
         distribution = judge_master.shuffle(grades_per_project)
-        return {'status': 'success', 'distribution': distribution}
+        return {'status': 'success', 'distribution': distribution}, 200
 
     def get(self):
         # get number of grades per hacker

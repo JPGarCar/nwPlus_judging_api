@@ -1,7 +1,7 @@
 import math
 import random
 
-from models import Hacker, Submission, Grade, Team
+from models import Hacker, Submission, Grade, Team, db
 
 
 class JudgeMaster:
@@ -236,6 +236,10 @@ class JudgeMaster:
                         sets[num_grades_hacker_list[0]][1].append(num_grades_hacker_list)
         dis = self.getDistribution(sets)
         print(dis)
+
+        # commit db changes
+        db.session.commit()
+
         return dis
 
     def getDistribution(self, sets):
