@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask_restful import Api
 
+from resources.DBInformation import DBInformationResource
 from resources.DBTester import DBTesterResource
 from resources.Grades import GradesResource
 from resources.Hacker import HackerResource
@@ -18,3 +19,4 @@ api.add_resource(HackerResource, '/Hacker')
 api.add_resource(GradesResource, '/Grades')
 api.add_resource(JudgeMasterResource, '/JudgeMaster')
 api.add_resource(DBTesterResource, '/DBTester')
+api.add_resource(DBInformationResource, '/DBInformation')
